@@ -143,17 +143,21 @@ class NotebookToHTMLConverter:
         
         return str(soup)
     
-    def convert_single_file(self, input_path: Path, output_path: Optional[Path] = None) -> Path:
+    def convert_single_file(self, input_path, output_path=None):
         """
         Convert a single notebook file to HTML.
         
         Args:
-            input_path: Path to input .ipynb file
-            output_path: Path for output HTML file (optional)
+            input_path: Path to input .ipynb file (str or Path)
+            output_path: Path for output HTML file (optional, str or Path)
             
         Returns:
             Path to generated HTML file
         """
+        # Convert to Path objects if strings
+        input_path = Path(input_path) if isinstance(input_path, str) else input_path
+        output_path = Path(output_path) if output_path and isinstance(output_path, str) else output_path
+        
         if not input_path.exists():
             raise FileNotFoundError(f"Input file not found: {input_path}")
         

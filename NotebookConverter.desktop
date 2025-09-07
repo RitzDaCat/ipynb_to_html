@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Notebook Converter
+Comment=Convert Jupyter notebooks to HTML
+Exec=/home/ritz/Documents/Repo/Linux/ipynb_to_html/dist/NotebookConverter
+Icon=jupyter
+Terminal=false
+Categories=Development;Education;Science;
+MimeType=application/x-ipynb+json;

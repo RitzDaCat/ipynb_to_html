@@ -1,37 +1,55 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# PyInstaller
-build/
-dist/
-*.spec
-
-# IDE
-.vscode/
-.idea/
+# Miscellaneous
+*.class
+*.log
+*.pyc
 *.swp
-*.swo
-
-# OS
 .DS_Store
-Thumbs.db
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# Project specific
-# Exclude example files but keep project files
-linear.ipynb
-linear.html
-*_files/
-icon.ico
-install.bat
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# Logs
-*.log 
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Arch Linux package build artifacts
+arch-pkg/*.pkg.tar.*
+arch-pkg/*.tar.gz
+arch-pkg/src/
+arch-pkg/pkg/
+arch-pkg/*.log
+
+# Flutter plugins
+.flutter-plugins

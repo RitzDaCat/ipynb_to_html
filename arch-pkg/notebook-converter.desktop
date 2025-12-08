@@ -1,0 +1,20 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Notebook Converter
+GenericName=Jupyter Notebook Converter
+Comment=Convert Jupyter notebooks (.ipynb) to beautiful HTML with custom themes
+Exec=notebook-converter %F
+Icon=notebook-converter
+Terminal=false
+Categories=Development;Education;Science;Utility;TextEditor;
+MimeType=application/x-ipynb+json;application/json;
+Keywords=jupyter;notebook;ipynb;html;convert;export;data;science;flutter;
+StartupNotify=true
+StartupWMClass=notebook-converter
+Actions=new-window;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=notebook-converter
+

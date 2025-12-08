@@ -1,0 +1,52 @@
+# Maintainer: Your Name <your-email@example.com>
+pkgname=notebook-converter
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Convert Jupyter notebooks to beautiful HTML - Flutter GUI app"
+arch=('x86_64')
+url="https://github.com/RitzDaCat/ipynb_to_html"
+license=('MPL2')
+depends=(
+    'gtk3'
+    'glib2'
+)
+optdepends=(
+    'xdg-utils: for opening files and folders'
+)
+source=()
+sha256sums=()
+install=notebook-converter.install
+
+package() {
+    cd "$startdir"
+    
+    # Create directories
+    install -dm755 "$pkgdir/opt/$pkgname"
+    install -dm755 "$pkgdir/usr/bin"
+    install -dm755 "$pkgdir/usr/share/applications"
+
+    # Extract and install the app bundle
+    tar -xzf bundle.tar.gz -C "$pkgdir/opt/$pkgname" --strip-components=1
+    
+    # Make executable
+    chmod +x "$pkgdir/opt/$pkgname/notebook_converter"
+
+    # Create launcher script
+    cat > "$pkgdir/usr/bin/$pkgname" << 'EOF'
+#!/bin/bash
+cd /opt/notebook-converter
+exec ./notebook_converter "$@"
+EOF
+    chmod +x "$pkgdir/usr/bin/$pkgname"
+
+    # Install desktop file
+    install -Dm644 "notebook-converter.desktop" \
+        "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+    # Install icons for KDE/GNOME (all standard sizes)
+    install -Dm644 "icon.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
+    for size in 16 22 24 32 48 64 128 256 512; do
+        install -dm755 "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps"
+        install -Dm644 "icon-${size}.png" "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/$pkgname.png" 2>/dev/null || true
+    done
+}

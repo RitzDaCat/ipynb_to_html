@@ -1,0 +1,207 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build Linux
+        run: flutter build linux --release
+      
+      - name: Create Linux archive
+        run: |
+          cd build/linux/x64/release
+          tar -czvf notebook-converter-linux-x64.tar.gz bundle/
+          mv notebook-converter-linux-x64.tar.gz ${{ github.workspace }}/
+      
+      - name: Build Arch package
+        run: |
+          cd arch-pkg
+          cp ../build/linux/x64/release/notebook-converter-linux-x64.tar.gz bundle.tar.gz
+          # Create a simplified PKGBUILD for the release
+          cat > PKGBUILD << 'EOF'
+          pkgname=notebook-converter
+          pkgver=${{ github.ref_name }}
+          pkgrel=1
+          pkgdesc="Convert Jupyter notebooks to beautiful HTML"
+          arch=('x86_64')
+          url="https://github.com/${{ github.repository }}"
+          license=('MPL2')
+          depends=('gtk3' 'glib2')
+          source=("notebook-converter-linux-x64.tar.gz")
+          sha256sums=('SKIP')
+          install=notebook-converter.install
+          
+          package() {
+              install -dm755 "$pkgdir/opt/$pkgname"
+              install -dm755 "$pkgdir/usr/bin"
+              install -dm755 "$pkgdir/usr/share/applications"
+              
+              tar -xzf "$srcdir/notebook-converter-linux-x64.tar.gz" -C "$pkgdir/opt/$pkgname" --strip-components=1
+              chmod +x "$pkgdir/opt/$pkgname/notebook_converter"
+              
+              cat > "$pkgdir/usr/bin/$pkgname" << 'LAUNCHER'
+          #!/bin/bash
+          cd /opt/notebook-converter
+          exec ./notebook_converter "$@"
+          LAUNCHER
+              chmod +x "$pkgdir/usr/bin/$pkgname"
+              
+              install -Dm644 "$startdir/notebook-converter.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+          }
+          EOF
+      
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: |
+            notebook-converter-linux-x64.tar.gz
+            arch-pkg/PKGBUILD
+            arch-pkg/notebook-converter.desktop
+            arch-pkg/notebook-converter.install
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build Windows
+        run: flutter build windows --release
+      
+      - name: Create Windows archive
+        run: |
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath notebook-converter-windows-x64.zip
+          Move-Item notebook-converter-windows-x64.zip ${{ github.workspace }}/
+      
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: notebook-converter-windows-x64.zip
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build APK
+        run: flutter build apk --release
+      
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk notebook-converter-android.apk
+      
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: notebook-converter-android.apk
+
+  create-release:
+    needs: [build-linux, build-windows, build-android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Display artifacts
+        run: ls -R artifacts
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Notebook Converter ${{ github.ref_name }}
+          body: |
+            ## Notebook Converter ${{ github.ref_name }}
+            
+            Convert Jupyter notebooks to beautiful HTML with custom themes.
+            
+            ### Downloads
+            
+            | Platform | File | Notes |
+            |----------|------|-------|
+            | 🐧 **Linux** | `notebook-converter-linux-x64.tar.gz` | Extract and run `bundle/notebook_converter` |
+            | 🪟 **Windows** | `notebook-converter-windows-x64.zip` | Extract and run `notebook_converter.exe` |
+            | 🤖 **Android** | `notebook-converter-android.apk` | Install APK on your device |
+            
+            ### Arch Linux
+            
+            Download all files and run:
+            ```bash
+            makepkg -si
+            ```
+            
+            ### Features
+            - 10+ built-in themes (Tokyo Night, Dracula, Nord, etc.)
+            - Custom theme editor with live preview
+            - Background patterns (dots, grid, blueprint, etc.)
+            - Drag & drop support
+            - Batch conversion
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/linux-build/notebook-converter-linux-x64.tar.gz
+            artifacts/linux-build/PKGBUILD
+            artifacts/linux-build/notebook-converter.desktop
+            artifacts/linux-build/notebook-converter.install
+            artifacts/windows-build/notebook-converter-windows-x64.zip
+            artifacts/android-build/notebook-converter-android.apk
+

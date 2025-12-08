@@ -1,0 +1,56 @@
+# Maintainer: Ritz <your-email@example.com>
+# Pre-built package - does not require Flutter to install
+
+pkgname=notebook-converter-bin
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Convert Jupyter notebooks to beautiful HTML - Flutter GUI app (pre-built binary)"
+arch=('x86_64')
+url="https://github.com/RitzDaCat/ipynb_to_html"
+license=('MPL2')
+provides=('notebook-converter')
+conflicts=('notebook-converter')
+depends=(
+    'gtk3'
+    'glib2'
+    'cairo'
+    'pango'
+    'gdk-pixbuf2'
+    'libepoxy'
+)
+optdepends=(
+    'xdg-utils: for opening files'
+)
+source=(
+    "notebook-converter-${pkgver}.tar.gz::file://bundle.tar.gz"
+    "notebook-converter.desktop"
+    "notebook-converter.install"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP')
+install=notebook-converter.install
+
+package() {
+    # Create directories
+    install -dm755 "$pkgdir/opt/notebook-converter"
+    install -dm755 "$pkgdir/usr/bin"
+    install -dm755 "$pkgdir/usr/share/applications"
+
+    # Install the app bundle
+    cp -r "$srcdir/bundle/"* "$pkgdir/opt/notebook-converter/"
+    
+    # Make executable
+    chmod +x "$pkgdir/opt/notebook-converter/notebook_converter"
+
+    # Create launcher script
+    cat > "$pkgdir/usr/bin/notebook-converter" << 'EOF'
+#!/bin/bash
+cd /opt/notebook-converter
+exec ./notebook_converter "$@"
+EOF
+    chmod +x "$pkgdir/usr/bin/notebook-converter"
+
+    # Install desktop file
+    install -Dm644 "$srcdir/notebook-converter.desktop" \
+        "$pkgdir/usr/share/applications/notebook-converter.desktop"
+}
+

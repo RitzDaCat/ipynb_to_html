@@ -46,11 +46,11 @@ class NotebookConverterApp extends StatelessWidget {
       ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme),
       scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      cardTheme: CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFE0E0E0)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          side: BorderSide(color: Color(0xFFE0E0E0)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -89,12 +89,12 @@ class NotebookConverterApp extends StatelessWidget {
       ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme),
       scaffoldBackgroundColor: const Color(0xFF1A1B26),
-      cardTheme: CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 0,
-        color: const Color(0xFF24283B),
+        color: Color(0xFF24283B),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFF3B4261)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          side: BorderSide(color: Color(0xFF3B4261)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

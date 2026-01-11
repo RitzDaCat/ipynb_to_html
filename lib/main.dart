@@ -46,7 +46,7 @@ class NotebookConverterApp extends StatelessWidget {
       ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme),
       scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -89,7 +89,7 @@ class NotebookConverterApp extends StatelessWidget {
       ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme),
       scaffoldBackgroundColor: const Color(0xFF1A1B26),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 0,
         color: Color(0xFF24283B),
         shape: RoundedRectangleBorder(

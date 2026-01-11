@@ -558,7 +558,7 @@ body {
 
 /* ========== COMMON ELEMENT STYLES ========== */
 .markdown-cell { background: transparent; }
-.markdown-content { padding: 1rem 0; }
+.markdown-content { padding: 1rem 0; overflow-x: auto; }
 .markdown-content h1 { font-size: 2em; border-bottom: 2px solid; padding-bottom: 0.3em; margin-top: 1.5em; margin-bottom: 0.5em; }
 .markdown-content h2 { font-size: 1.5em; border-bottom: 1px solid; padding-bottom: 0.3em; margin-top: 1.5em; margin-bottom: 0.5em; }
 .markdown-content h3 { font-size: 1.25em; margin-top: 1.5em; margin-bottom: 0.5em; }
@@ -584,6 +584,8 @@ body {
 .output-image { text-align: center; }
 .output-image img, .output-image svg { max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
+
+.output-html { overflow-x: auto; }
 .output-html table, .dataframe { border-collapse: collapse; margin: 0.5rem 0; font-size: 0.9em; }
 .output-html th, .dataframe th { padding: 0.6rem 1rem; text-align: left; font-weight: 600; }
 .output-html td, .dataframe td { padding: 0.5rem 1rem; }
